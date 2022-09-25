@@ -38,6 +38,7 @@ namespace WebGoatCore.Controllers
             if (nameFilter != null)
             {
                 string regex = "(([A-Za-z'])+.)+[A-Za-z]$";
+                
                 Regex nameFilterRx = new Regex(regex);
                 match = nameFilterRx.Match(nameFilter);
             }

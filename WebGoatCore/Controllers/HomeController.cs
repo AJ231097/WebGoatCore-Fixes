@@ -69,7 +69,8 @@ namespace WebGoatCore.Controllers
             try
             {
                 var path = HttpContextServerVariableExtensions.GetServerVariable(this.HttpContext, "PATH_TRANSLATED");
-                path = path + "\\..\\wwwroot\\upload\\" + FormFile.FileName;
+                string file = Path.GetFileName(FormFile.FileName);
+                path = path + "\\..\\wwwroot\\upload\\" + file;
                 using (var fileStream = new FileStream(path, FileMode.Create))
                 {
                     await FormFile.CopyToAsync(fileStream);

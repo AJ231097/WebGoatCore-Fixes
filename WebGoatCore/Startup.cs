@@ -93,6 +93,7 @@ namespace WebGoatCore
                 options.IdleTimeout = TimeSpan.FromHours(1);
             });
 
+
             JsonConvert.DefaultSettings = () => new JsonSerializerSettings
             {
                 PreserveReferencesHandling = PreserveReferencesHandling.Objects
