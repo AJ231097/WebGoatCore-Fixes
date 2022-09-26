@@ -8,7 +8,7 @@ using Microsoft.AspNetCore.Http;
 using System.IO;
 using System.Threading.Tasks;
 using System;
-
+using System.Linq;
 
 namespace WebGoatCore.Controllers
 {
@@ -71,11 +71,22 @@ namespace WebGoatCore.Controllers
                 var path = HttpContextServerVariableExtensions.GetServerVariable(this.HttpContext, "PATH_TRANSLATED");
                 string file = Path.GetFileName(FormFile.FileName);
                 path = path + "\\..\\wwwroot\\upload\\" + file;
-                using (var fileStream = new FileStream(path, FileMode.Create))
+                string [] permittedExtensions = { ".txt", ".pdf" };
+                var ext = Path.GetExtension(file).ToLowerInvariant();
+                if (string.IsNullOrEmpty(ext) || permittedExtensions.Contains(ext))
                 {
-                    await FormFile.CopyToAsync(fileStream);
+
+
+                    using (var fileStream = new FileStream(path, FileMode.Create))
+                    {
+                        await FormFile.CopyToAsync(fileStream);
+                    }
+                    ViewBag.Message = $"File {FormFile.FileName} Uploaded Successfully at /upload";
                 }
-                ViewBag.Message = $"File {FormFile.FileName} Uploaded Successfully at /upload";
+                else
+                {
+                    ViewBag.Message = "Please Upload valid Filetype!!";
+                }
                 return View("About");
             }
             catch (Exception ex)
