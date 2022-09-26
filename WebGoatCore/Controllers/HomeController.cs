@@ -31,7 +31,7 @@ namespace WebGoatCore.Controllers
             });
         }
 
-        [HttpPost("Index"), DisableRequestSizeLimit]
+        [HttpPost("Index")]
         public IActionResult UploadFile1()
         {
             ViewBag.Message = "";

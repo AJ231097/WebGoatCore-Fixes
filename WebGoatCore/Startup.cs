@@ -54,6 +54,10 @@ namespace WebGoatCore
             services.AddDefaultIdentity<IdentityUser>()
                 .AddRoles<IdentityRole>()
                 .AddEntityFrameworkStores<NorthwindContext>();
+            services.Configure<IISServerOptions>(options =>
+            {
+                options.MaxRequestBodySize = 2097152;
+            });
 
             services.Configure<IdentityOptions>(options =>
             {
