@@ -39,7 +39,7 @@ namespace WebGoatCore.Controllers
             {
                 string regex = "(([A-Za-z'])+.)+[A-Za-z]$";
                 //Regex nameFilterRx = new Regex(regex);
-                Regex nameFilterRx = new Regex(regex, RegexOptions.IgnoreCase, TimeSpan.FromSeconds(1));
+                Regex nameFilterRx = new Regex(regex, RegexOptions.None, TimeSpan.FromSeconds(1));
                 match = nameFilterRx.Match(nameFilter);
             }
             
