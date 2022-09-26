@@ -35,28 +35,35 @@ namespace WebGoatCore.Controllers
         public IActionResult UploadFile1()
         {
             ViewBag.Message = "";
-            foreach (var formFile in Request.Form.Files)
+            try
             {
-                if (formFile.Length > 0)
+                foreach (var formFile in Request.Form.Files)
                 {
-                    using (var stream = formFile.OpenReadStream())
+                    if (formFile.Length > 0)
                     {
-                        using (StreamReader reader = new StreamReader(stream))
+                        using (var stream = formFile.OpenReadStream())
                         {
-                            string line = "";
-                            while (!reader.EndOfStream)
+                            using (StreamReader reader = new StreamReader(stream))
                             {
-                                line += reader.ReadLine();
+                                string line = "";
+                                while (!reader.EndOfStream)
+                                {
+                                    line += reader.ReadLine();
+                                }
+                                ViewBag.Message = $"Your details are: {line}";
                             }
-                            ViewBag.Message = $"Your details are: {line}";
                         }
                     }
                 }
+                return View("Index", new HomeViewModel()
+                {
+                    TopProducts = _productRepository.GetTopProducts(4)
+                });
             }
-            return View("Index", new HomeViewModel()
+            catch (Microsoft.AspNetCore.Server.IIS.BadHttpRequestException)
             {
-                TopProducts = _productRepository.GetTopProducts(4)
-            });
+                throw new ArgumentOutOfRangeException("File too big");
+            }
         }
 
         [HttpGet]
