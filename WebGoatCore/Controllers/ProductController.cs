@@ -28,19 +28,21 @@ namespace WebGoatCore.Controllers
 
         public IActionResult Search(string? nameFilter, int? selectedCategoryId)
         {
+            
             if (selectedCategoryId != null && _categoryRepository.GetById(selectedCategoryId.Value) == null)
             {
                 selectedCategoryId = null;
             }
 
             Match match = null;
-
             if (nameFilter != null)
             {
                 string regex = "(([A-Za-z'])+.)+[A-Za-z]$";
-                Regex nameFilterRx = new Regex(regex);
+                //Regex nameFilterRx = new Regex(regex);
+                Regex nameFilterRx = new Regex(regex, RegexOptions.IgnoreCase, TimeSpan.FromSeconds(1));
                 match = nameFilterRx.Match(nameFilter);
             }
+            
 
             if (nameFilter == null || (match != null && match.Success))
             {
