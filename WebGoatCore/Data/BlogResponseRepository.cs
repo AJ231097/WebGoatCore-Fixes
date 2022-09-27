@@ -1,4 +1,5 @@
 using Microsoft.EntityFrameworkCore;
+using System;
 using WebGoatCore.Models;
 
 namespace WebGoatCore.Data
@@ -14,10 +15,14 @@ namespace WebGoatCore.Data
 
         public void CreateBlogResponse(BlogResponse response)
         {
+
             //TODO: should put this in a try/catch
             // Use EntityFramework FromSQLRaw for faster query
-            var responseBack = _context.BlogResponses.FromSqlRaw(
+            //var responseBack = _context.BlogResponses.FromSqlRaw(
+            //    $"INSERT INTO BlogResponses (Author, BlogEntryId, ResponseDate, Contents) VALUES ( '{response.Author}', '{response.BlogEntryId}', '{response.ResponseDate}', '{response.Contents}' ); SELECT * FROM BlogResponses WHERE changes() = 1 AND Id = last_insert_rowid();").ToListAsync();
+            var responseBack = _context.BlogResponses.FromSqlInterpolated(
                 $"INSERT INTO BlogResponses (Author, BlogEntryId, ResponseDate, Contents) VALUES ( '{response.Author}', '{response.BlogEntryId}', '{response.ResponseDate}', '{response.Contents}' ); SELECT * FROM BlogResponses WHERE changes() = 1 AND Id = last_insert_rowid();").ToListAsync();
+
         }
     }
 }
