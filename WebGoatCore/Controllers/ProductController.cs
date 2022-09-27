@@ -7,6 +7,7 @@ using System;
 using System.Linq;
 using WebGoatCore.ViewModels;
 using System.Text.RegularExpressions;
+using System.Text.Encodings.Web;
 
 namespace WebGoatCore.Controllers
 {
@@ -17,13 +18,17 @@ namespace WebGoatCore.Controllers
         private readonly CategoryRepository _categoryRepository;
         private readonly SupplierRepository _supplierRepository;
         private readonly IWebHostEnvironment _webHostEnvironment;
-
-        public ProductController(ProductRepository productRepository, IWebHostEnvironment webHostEnvironment, CategoryRepository categoryRepository, SupplierRepository supplierRepository)
+        UrlEncoder _urlEncoder;
+        HtmlEncoder _htmlEncoder;
+        public ProductController(ProductRepository productRepository, IWebHostEnvironment webHostEnvironment, CategoryRepository categoryRepository, SupplierRepository supplierRepository, UrlEncoder urlEncoder, HtmlEncoder htmlEncoder)
         {
             _productRepository = productRepository;
             _categoryRepository = categoryRepository;
             _supplierRepository = supplierRepository;
             _webHostEnvironment = webHostEnvironment;
+            _urlEncoder = urlEncoder;
+            _htmlEncoder = htmlEncoder;
+
         }
 
         public IActionResult Search(string? nameFilter, int? selectedCategoryId)
@@ -78,7 +83,9 @@ namespace WebGoatCore.Controllers
 
                 if (productName != "")
                 {
-                    ViewBag.Message = productName;
+
+                    //ViewBag.Message = _urlEncoder.Encode(productName);
+                    ViewBag.Message = _htmlEncoder.Encode(_urlEncoder.Encode(productName));
                 }
             }
             catch (InvalidOperationException)

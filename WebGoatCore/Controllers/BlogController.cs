@@ -13,7 +13,7 @@ namespace WebGoatCore.Controllers
     {
         HtmlEncoder _htmlEncoder;
         JavaScriptEncoder _javaScriptEncoder;
-        UrlEncoder _urlEncoder;
+        
         private readonly BlogEntryRepository _blogEntryRepository;
         private readonly BlogResponseRepository _blogResponseRepository;
 
