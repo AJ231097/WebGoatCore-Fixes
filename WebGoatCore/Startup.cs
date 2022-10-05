@@ -107,6 +107,8 @@ namespace WebGoatCore
             services.AddScoped<OrderRepository>();
             services.AddScoped<CategoryRepository>();
 
+            // TODO: Enable this to use Argon 2 as default hasher algorithm
+            // services.AddScoped<IPasswordHasher<IdentityUser>, Argon2Hasher<IdentityUser>>();
             // Set configurations for backward compatibility
             // https://learn.microsoft.com/en-us/aspnet/core/security/authentication/identity-configuration?view=aspnetcore-3.1
             services.Configure<PasswordHasherOptions>(option =>
@@ -114,6 +116,7 @@ namespace WebGoatCore
                 option.CompatibilityMode = PasswordHasherCompatibilityMode.IdentityV2;
                 option.IterationCount = 5;
             });
+
         }
 
         public void Configure(IApplicationBuilder app, IWebHostEnvironment env)
