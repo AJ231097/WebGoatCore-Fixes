@@ -134,11 +134,11 @@ namespace WebGoatCore.Utils
             int degreeOfParallelism = 4;
 
             // TODO: This should have a better count. Maybe > 3?
-            int iterations = 128;
+            int iterations = 4;
 
             // TODO: Must use a bigger memory size
             // Currently set to 1 MB and Konscious.Security.Cryptography takes memory size in KiB(KB)
-            int memorySize = 1024 * 4;
+            int memorySize = 1024 * 256;
 
             var argon2 = new Argon2id(password)
             {
