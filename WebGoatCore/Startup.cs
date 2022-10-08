@@ -13,6 +13,7 @@ using System.IO;
 using System.Reflection;
 using Microsoft.Extensions.FileProviders;
 using Microsoft.AspNetCore.Http;
+using WebGoatCore.Utils;
 
 namespace WebGoatCore
 {
@@ -108,7 +109,7 @@ namespace WebGoatCore
             services.AddScoped<CategoryRepository>();
 
             // TODO: Enable this to use Argon 2 as default hasher algorithm
-            // services.AddScoped<IPasswordHasher<IdentityUser>, Argon2Hasher<IdentityUser>>();
+             services.AddScoped<IPasswordHasher<IdentityUser>, Argon2Hasher<IdentityUser>>();
             // Set configurations for backward compatibility
             // https://learn.microsoft.com/en-us/aspnet/core/security/authentication/identity-configuration?view=aspnetcore-3.1
             services.Configure<PasswordHasherOptions>(option =>

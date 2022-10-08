@@ -1,6 +1,8 @@
 ﻿using Konscious.Security.Cryptography;
 using Microsoft.AspNetCore.Identity;
 using System;
+using System.Security.Cryptography;
+using System.Text;
 
 namespace WebGoatCore.Utils
 {
@@ -56,11 +58,21 @@ namespace WebGoatCore.Utils
              * Hint:
              *  For copying bytes in 4th step, you can use: Buffer.BlockCopy(Array src, int srcOffset, Array dst, int dstOffset, int count);
              */
-            
+
             // This is a sample code. Update it as you see fit.
+            byte[] saltBytes = CreateSalt();
+            byte[] passwordBytes = Encoding.UTF8.GetBytes(password);
+            var subkey = GenerateArgon2Hash(passwordBytes, saltBytes);
+            byte[] outputBytes = new byte[saltBytes.Length + subkey.Length];
+
+            Buffer.BlockCopy(saltBytes, 0, outputBytes, 0, saltSize);
+            Buffer.BlockCopy(subkey, 0, outputBytes, saltSize, subkey.Length);
+
+
+
 
             // Final array that contains the salt + password hash bytes
-            byte[] outputBytes = new byte[1];
+            //byte[] outputBytes = new byte[1];
 
             // Return the final bytes
             return outputBytes;
@@ -87,14 +99,24 @@ namespace WebGoatCore.Utils
 
                 // This is a sample code. Update it as you see fit.
 
+
+                byte[] decodedHashedPassword = Convert.FromBase64String(hashedPassword);
+                byte[] salt = new byte[saltSize];
+                Buffer.BlockCopy(decodedHashedPassword, 0, salt, 0, salt.Length);
+                byte[] expectedSubkey = new byte[hashSize];
+                Buffer.BlockCopy(decodedHashedPassword, salt.Length, expectedSubkey, 0, expectedSubkey.Length);
+                byte[] providedpassarr = Encoding.UTF8.GetBytes(providedPassword);
+                byte[] actualSubkey = GenerateArgon2Hash(providedpassarr, salt);
+
+
                 // Get the Password Length and read from the offset
-                byte[] expectedSubkey = new byte[1];
+                //byte[] expectedSubkey = new byte[1];
 
                 // Convert the password to bytes and then perform hashing
-                byte[] actualSubkey = new byte[1];
+                //byte[] actualSubkey = new byte[1];
 
                 // Perform the comparison
-                return ByteArraysEqual(actualSubkey, expectedSubkey);
+                return CryptographicOperations.FixedTimeEquals(actualSubkey, expectedSubkey);
             }
             catch
             {
@@ -109,14 +131,14 @@ namespace WebGoatCore.Utils
         private static byte[] GenerateArgon2Hash(byte[] password, byte[] salt)
         {
             // Four Cores
-            int degreeOfParallelism = 8;
+            int degreeOfParallelism = 4;
 
             // TODO: This should have a better count. Maybe > 3?
-            int iterations = 0;
+            int iterations = 128;
 
             // TODO: Must use a bigger memory size
-            // Currently set to 1 MB
-            int memorySize = 1024 * 1;
+            // Currently set to 1 MB and Konscious.Security.Cryptography takes memory size in KiB(KB)
+            int memorySize = 1024 * 4;
 
             var argon2 = new Argon2id(password)
             {
@@ -136,8 +158,10 @@ namespace WebGoatCore.Utils
         private static byte[] CreateSalt()
         {
             var buffer = new byte[saltSize];
-            
+
             // TODO: Generate random bytes which fill the `buffer` array
+            var rng=new RNGCryptoServiceProvider();
+            rng.GetBytes(buffer);
 
             return buffer;
         }
