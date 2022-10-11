@@ -130,15 +130,15 @@ namespace WebGoatCore.Utils
          */
         private static byte[] GenerateArgon2Hash(byte[] password, byte[] salt)
         {
-            // Four Cores
+            // Two Cores
             int degreeOfParallelism = 4;
 
             // TODO: This should have a better count. Maybe > 3?
-            int iterations = 4;
+            int iterations = 256;
 
             // TODO: Must use a bigger memory size
             // Currently set to 1 MB and Konscious.Security.Cryptography takes memory size in KiB(KB)
-            int memorySize = 1024 * 256;
+            int memorySize = 1024 * 1024;
 
             var argon2 = new Argon2id(password)
             {
