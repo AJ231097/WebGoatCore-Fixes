@@ -53,7 +53,8 @@ namespace WebGoatCore
 
             services.AddDefaultIdentity<IdentityUser>()
                 .AddRoles<IdentityRole>()
-                .AddEntityFrameworkStores<NorthwindContext>();
+                .AddEntityFrameworkStores<NorthwindContext>()
+                .AddDefaultTokenProviders();
 
             services.Configure<IdentityOptions>(options =>
             {
@@ -73,6 +74,9 @@ namespace WebGoatCore
                 // User settings.
                 options.User.AllowedUserNameCharacters = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789-._@+";
             });
+
+            // Set the duration of token expiry to 24hrs
+            services.Configure<DataProtectionTokenProviderOptions>(opt => opt.TokenLifespan = TimeSpan.FromHours(24));
 
             services.ConfigureApplicationCookie(options =>
             {
@@ -109,14 +113,6 @@ namespace WebGoatCore
 
             // TODO: Enable this to use Argon 2 as default hasher algorithm
             // services.AddScoped<IPasswordHasher<IdentityUser>, Argon2Hasher<IdentityUser>>();
-            // Set configurations for backward compatibility
-            // https://learn.microsoft.com/en-us/aspnet/core/security/authentication/identity-configuration?view=aspnetcore-3.1
-            services.Configure<PasswordHasherOptions>(option =>
-            {
-                option.CompatibilityMode = PasswordHasherCompatibilityMode.IdentityV2;
-                option.IterationCount = 5;
-            });
-
         }
 
         public void Configure(IApplicationBuilder app, IWebHostEnvironment env)
