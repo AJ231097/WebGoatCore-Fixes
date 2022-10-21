@@ -100,11 +100,11 @@ namespace WebGoatCore.Controllers
                     //Implementing Email Verification
                     var token = await _userManager.GenerateEmailConfirmationTokenAsync(user);
                     var confirmationLink = Url.Action("ConfirmEmail", "Email", new { token, email = model.Email }, Request.Scheme);
-                    EmailHelper emailHelper = new EmailHelper();
-                    //var V = "Email Confirmation";
-                    bool emailResponse = emailHelper.SendEmail(model.Email, confirmationLink);
-                    //EmailSender.Send(model.Email, V, confirmationLink);
-                    if(emailResponse)
+                    //EmailHelper emailHelper = new EmailHelper();
+                    var V = "Email Confirmation";
+                    //bool emailResponse = emailHelper.SendEmail(model.Email, confirmationLink);
+                    EmailSender.Send(model.Email, V, confirmationLink);
+                    try
                     {
 
 
@@ -114,7 +114,7 @@ namespace WebGoatCore.Controllers
                         //await _signInManager.SignInAsync(user, isPersistent: false);
                         return RedirectToAction("Index", "Home");
                     }
-                    else
+                    catch
                     {
                         System.Diagnostics.Debug.WriteLine("Email Failed");
                         //ModelState.AddModelError(string.Empty, "Email Failed");

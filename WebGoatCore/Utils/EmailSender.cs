@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Net.Mail;
+using System.Net;
 
 namespace WebGoatCore
 {
@@ -14,6 +15,7 @@ namespace WebGoatCore
                 Body = messageBody,
             };
             var client = new SmtpClient("smtp.gmail.com",587) { EnableSsl = true };
+            client.Credentials = new System.Net.NetworkCredential("lucifermorningstar231087@gmail.com", "Lucifer@6969");
             client.UseDefaultCredentials = false;
             try
             {
