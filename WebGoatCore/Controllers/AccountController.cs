@@ -97,10 +97,28 @@ namespace WebGoatCore.Controllers
                 var result = await _userManager.CreateAsync(user, model.Password);
                 if (result.Succeeded)
                 {
-                    _customerRepository.CreateCustomer(model.CompanyName, model.Username, model.Address, model.City, model.Region, model.PostalCode, model.Country);
+                    //Implementing Email Verification
+                    var token = await _userManager.GenerateEmailConfirmationTokenAsync(user);
+                    var confirmationLink = Url.Action("ConfirmEmail", "Email", new { token, email = model.Email }, Request.Scheme);
+                    EmailHelper emailHelper = new EmailHelper();
+                    //var V = "Email Confirmation";
+                    bool emailResponse = emailHelper.SendEmail(model.Email, confirmationLink);
+                    //EmailSender.Send(model.Email, V, confirmationLink);
+                    if(emailResponse)
+                    {
 
-                    await _signInManager.SignInAsync(user, isPersistent: false);
-                    return RedirectToAction("Index", "Home");
+
+                        
+                        //_customerRepository.CreateCustomer(model.CompanyName, model.Username, model.Address, model.City, model.Region, model.PostalCode, model.Country);
+
+                        //await _signInManager.SignInAsync(user, isPersistent: false);
+                        return RedirectToAction("Index", "Home");
+                    }
+                    else
+                    {
+                        System.Diagnostics.Debug.WriteLine("Email Failed");
+                        //ModelState.AddModelError(string.Empty, "Email Failed");
+                    }
                 }
 
                 foreach (var error in result.Errors)
