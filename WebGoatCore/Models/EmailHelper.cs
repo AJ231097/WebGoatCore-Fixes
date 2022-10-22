@@ -12,7 +12,7 @@ namespace WebGoatCore.Models
         public bool SendEmail(string userEmail, string confirmationLink)
         {
             MailMessage mailMessage = new MailMessage();
-            mailMessage.From = new MailAddress("securecoding231087@outlook.com");
+            mailMessage.From = new MailAddress("<from_email_id>");
             mailMessage.To.Add(new MailAddress(userEmail));
 
             mailMessage.Subject = "Confirm your email";
@@ -21,7 +21,7 @@ namespace WebGoatCore.Models
 
             SmtpClient client = new SmtpClient("smtp.office365.com");
             client.UseDefaultCredentials = true;
-            client.Credentials = new System.Net.NetworkCredential("securecoding231087@outlook.com", "securecodinG@143","outlook.com");
+            client.Credentials = new System.Net.NetworkCredential("<from_email_id>", "<from_email_id_password>", "outlook.com");
             client.DeliveryMethod = SmtpDeliveryMethod.Network;
             //client.Host = "smtpout.secureserver.net";
             client.Port = 587;
