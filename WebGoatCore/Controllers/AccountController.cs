@@ -100,25 +100,33 @@ namespace WebGoatCore.Controllers
                     //Implementing Email Verification
                     var token = await _userManager.GenerateEmailConfirmationTokenAsync(user);
                     var confirmationLink = Url.Action("ConfirmEmail", "Email", new { token, email = model.Email }, Request.Scheme);
-                    //EmailHelper emailHelper = new EmailHelper();
-                    var V = "Email Confirmation";
-                    //bool emailResponse = emailHelper.SendEmail(model.Email, confirmationLink);
-                    EmailSender.Send(model.Email, V, confirmationLink);
-                    try
+                    EmailHelper emailHelper = new EmailHelper();
+                    bool emailResponse = emailHelper.SendEmail(model.Email, confirmationLink);
+                    if(emailResponse)
                     {
 
 
-                        
+
                         //_customerRepository.CreateCustomer(model.CompanyName, model.Username, model.Address, model.City, model.Region, model.PostalCode, model.Country);
 
                         //await _signInManager.SignInAsync(user, isPersistent: false);
                         return RedirectToAction("Index", "Home");
                     }
-                    catch
+                    else
                     {
                         System.Diagnostics.Debug.WriteLine("Email Failed");
-                        //ModelState.AddModelError(string.Empty, "Email Failed");
                     }
+                }
+                bool emailStatus = await _userManager.IsEmailConfirmedAsync(user);
+                if (emailStatus)
+                {
+                    _customerRepository.CreateCustomer(model.CompanyName, model.Username, model.Address, model.City, model.Region, model.PostalCode, model.Country);
+
+                    await _signInManager.SignInAsync(user, isPersistent: false);
+                }
+                else
+                {
+                    ModelState.AddModelError(string.Empty,"Verify the user");
                 }
 
                 foreach (var error in result.Errors)

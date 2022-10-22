@@ -12,18 +12,19 @@ namespace WebGoatCore.Models
         public bool SendEmail(string userEmail, string confirmationLink)
         {
             MailMessage mailMessage = new MailMessage();
-            mailMessage.From = new MailAddress("lucifermorningstar231087@gmail.com");
+            mailMessage.From = new MailAddress("securecoding231087@outlook.com");
             mailMessage.To.Add(new MailAddress(userEmail));
 
             mailMessage.Subject = "Confirm your email";
             mailMessage.IsBodyHtml = true;
             mailMessage.Body = confirmationLink;
 
-            SmtpClient client = new SmtpClient("smtp.gmail.com");
-            client.UseDefaultCredentials = false;
-            client.Credentials = new System.Net.NetworkCredential("lucifermorningstar231087.com", "Lucifer@6969");
+            SmtpClient client = new SmtpClient("smtp.office365.com");
+            client.UseDefaultCredentials = true;
+            client.Credentials = new System.Net.NetworkCredential("securecoding231087@outlook.com", "securecodinG@143","outlook.com");
+            client.DeliveryMethod = SmtpDeliveryMethod.Network;
             //client.Host = "smtpout.secureserver.net";
-            client.Port = 465;
+            client.Port = 587;
             client.EnableSsl= true;
 
             try
