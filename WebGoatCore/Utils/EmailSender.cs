@@ -8,15 +8,13 @@ namespace WebGoatCore
     {
         public static void Send(string to, string subject, string messageBody)
         {
-            var message = new MailMessage("lucifermorningstar231087@gmail.com", to)
+            var message = new MailMessage("WebAppSecurityClass@gmail.com", to)
             {
                 Subject = subject,
                 IsBodyHtml = true,
                 Body = messageBody,
             };
-            var client = new SmtpClient("smtp.gmail.com",587) { EnableSsl = true };
-            client.Credentials = new System.Net.NetworkCredential("lucifermorningstar231087@gmail.com", "Lucifer@6969");
-            client.UseDefaultCredentials = false;
+            var client = new SmtpClient() { EnableSsl = true };
             try
             {
                 client.Send(message);
@@ -29,7 +27,7 @@ namespace WebGoatCore
 
         public static void Send(MailMessage message)
         {
-            var client = new SmtpClient("smtp.gmail.com", 587) { EnableSsl = true };
+            var client = new SmtpClient() { EnableSsl = true };
             try
             {
                 client.Send(message);
