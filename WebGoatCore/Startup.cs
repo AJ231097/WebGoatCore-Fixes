@@ -13,6 +13,7 @@ using System.IO;
 using System.Reflection;
 using Microsoft.Extensions.FileProviders;
 using Microsoft.AspNetCore.Http;
+using WebGoatCore.Utils;
 
 namespace WebGoatCore
 {
@@ -54,7 +55,8 @@ namespace WebGoatCore
             services.AddDefaultIdentity<IdentityUser>()
                 .AddRoles<IdentityRole>()
                 .AddEntityFrameworkStores<NorthwindContext>()
-                .AddDefaultTokenProviders();
+                .AddDefaultTokenProviders()
+                .AddTokenProvider <GoatTotpSecurityStampBasedTokenProvider<IdentityUser>> ("GoatTotpSecurityStampBasedTokenProvider");
 
             services.Configure<IdentityOptions>(options =>
             {
@@ -73,6 +75,8 @@ namespace WebGoatCore
 
                 // User settings.
                 options.User.AllowedUserNameCharacters = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789-._@+";
+
+                options.Tokens.PasswordResetTokenProvider = typeof(GoatTotpSecurityStampBasedTokenProvider<IdentityUser>).Name.Split("`")[0];
             });
 
             // Set the duration of token expiry to 24hrs
