@@ -265,13 +265,23 @@ namespace WebGoatCore.Controllers
             var user = await _userManager.FindByNameAsync(model.Username);
             if (user == null)
             {
-                ModelState.AddModelError(string.Empty, "We don't recognize your username. Please try again.");
+                ModelState.AddModelError(string.Empty, "If there is a email associated with username you will be getting email.");
                 return View(model);
             }
             var token = await _userManager.GeneratePasswordResetTokenAsync(user);
             var callback = Url.Action(nameof(ResetPassword), "Account", new { token, username = user.UserName }, Request.Scheme);
-            ViewBag.CallbackUrl = callback;
-            return View("ForgotPasswordConfirmation");
+            EmailHelper emailHelper = new EmailHelper();
+            bool emailResponse = emailHelper.SendEmail(user.Email, callback);
+            if (emailResponse)
+            {
+                //ViewBag.CallbackUrl = callback;
+                return View("ForgotPasswordConfirmation");
+            }
+            else
+            {
+                System.Diagnostics.Debug.WriteLine("Email Failed");
+                return View(model);
+            }
         }
 
         [HttpGet]
