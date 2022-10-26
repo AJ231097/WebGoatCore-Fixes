@@ -9,6 +9,7 @@ using WebGoatCore.ViewModels;
 using System.Linq;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Configuration;
+using Microsoft.AspNetCore.Authorization;
 
 namespace WebGoatCore.Controllers
 {
@@ -169,6 +170,8 @@ namespace WebGoatCore.Controllers
             return RedirectToAction("Receipt");
         }
 
+        [HttpGet]
+        [Authorize]
         public IActionResult Receipt(int? id)
         {
             var orderId = HttpContext.Session.GetInt32("OrderId");
@@ -197,6 +200,8 @@ namespace WebGoatCore.Controllers
             return View(order);
         }
 
+        [HttpGet]
+        [Authorize]
         public IActionResult Receipts()
         {
             var customer = GetCustomerOrAddError();
@@ -208,6 +213,7 @@ namespace WebGoatCore.Controllers
             return View(_orderRepository.GetAllOrdersByCustomerId(customer.CustomerId));
         }
 
+        [HttpGet]
         public IActionResult PackageTracking(string? carrier, string? trackingNumber)
         {
             var model = new PackageTrackingViewModel()
