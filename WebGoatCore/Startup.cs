@@ -13,6 +13,7 @@ using System.IO;
 using System.Reflection;
 using Microsoft.Extensions.FileProviders;
 using Microsoft.AspNetCore.Http;
+using Microsoft.AspNetCore.Mvc;
 
 namespace WebGoatCore
 {
@@ -55,6 +56,14 @@ namespace WebGoatCore
                 .AddRoles<IdentityRole>()
                 .AddEntityFrameworkStores<NorthwindContext>()
                 .AddDefaultTokenProviders();
+            services.AddAntiforgery(options =>
+            {
+                options.FormFieldName = "AntiForgeryFieldName";
+                options.HeaderName = "AntiForgeryHeaderName";
+                options.Cookie.Name = "AntiForgeryCookieName";
+            });
+            services.AddControllersWithViews(options =>
+            options.Filters.Add(new AutoValidateAntiforgeryTokenAttribute()));
 
             services.Configure<IdentityOptions>(options =>
             {
