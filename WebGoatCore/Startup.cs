@@ -13,6 +13,7 @@ using System.IO;
 using System.Reflection;
 using Microsoft.Extensions.FileProviders;
 using Microsoft.AspNetCore.Http;
+using WebGoatCore.Utils;
 
 namespace WebGoatCore
 {
@@ -87,6 +88,9 @@ namespace WebGoatCore
                 options.LoginPath = "/Account/Login";
                 options.AccessDeniedPath = "/Account/AccessDenied";
                 options.SlidingExpiration = true;
+                options.LogoutPath = new PathString("/Account/Logout");
+                options.ReturnUrlParameter = "/Account/Login";
+                options.SessionStore = new MemoryCacheTicketStore();
             });
 
             services.AddDistributedMemoryCache();
