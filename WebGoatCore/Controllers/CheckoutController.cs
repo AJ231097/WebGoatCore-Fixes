@@ -132,9 +132,11 @@ namespace WebGoatCore.Controllers
             {
                 creditCard.SaveCardForUser();
             }
+            Random n = new Random();
 
             var order = new Order
             {
+                OrderId=n.Next(),
                 ShipVia = model.ShippingMethod,
                 ShipName = model.ShipTarget,
                 ShipAddress = model.Address,
@@ -197,7 +199,16 @@ namespace WebGoatCore.Controllers
                 return View();
             }
 
-            return View(order);
+            if (order.Customer.ContactName == _userManager.GetUserName(User))
+            {
+                return View(order);
+            }
+
+            else
+            {
+                return RedirectToAction("Login", "Account");
+            }
+
         }
 
         [HttpGet]
