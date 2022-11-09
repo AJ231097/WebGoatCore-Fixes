@@ -28,12 +28,26 @@
         {
             <tr><td class="table-separator" colspan="6"></td></tr>
         }
-        <tr>
-            <td></td>
-            <td style="text-align: right">Subtotal:</td>
-            <td></td>
-            <td></td>
-            <td style="border-top: 5px">@Model.SubTotal</td>
-        </tr>
+    <tr>
+        <td></td>
+        <td style="text-align: right">Subtotal:</td>
+        <td></td>
+        <td></td>
+        @{
+            short total = 0;
+
+            foreach (var order in Model.OrderDetails)
+            {
+                checked
+                {
+                    short price = Convert.ToInt16(order.ExtendedPrice);
+                    total += price;
+                }
+            }
+            <td style="border-top: 5px">
+                @total
+            </td>
+        }
+    </tr>
     </tbody>
 </table>

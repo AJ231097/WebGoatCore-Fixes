@@ -10,6 +10,7 @@ using System.Linq;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Configuration;
 using Microsoft.AspNetCore.Authorization;
+using Microsoft.Extensions.Logging;
 
 namespace WebGoatCore.Controllers
 {
@@ -21,14 +22,16 @@ namespace WebGoatCore.Controllers
         private readonly OrderRepository _orderRepository;
         private CheckoutViewModel _model;
         private string _resourcePath;
+        private readonly ILogger _logger;
 
-        public CheckoutController(UserManager<IdentityUser> userManager, CustomerRepository customerRepository, IHostEnvironment hostEnvironment, IConfiguration configuration, ShipperRepository shipperRepository, OrderRepository orderRepository)
+        public CheckoutController(UserManager<IdentityUser> userManager, CustomerRepository customerRepository, IHostEnvironment hostEnvironment, IConfiguration configuration, ShipperRepository shipperRepository, OrderRepository orderRepository, ILogger<CheckoutController> logger)
         {
             _userManager = userManager;
             _customerRepository = customerRepository;
             _shipperRepository = shipperRepository;
             _orderRepository = orderRepository;
             _resourcePath = configuration.GetValue(Constants.WEBGOAT_ROOT, hostEnvironment.ContentRootPath);
+            _logger = logger;
         }
 
         [HttpGet]
@@ -55,8 +58,14 @@ namespace WebGoatCore.Controllers
                 _model.ExpirationMonth = creditCard.Expiry.Month;
                 _model.ExpirationYear = creditCard.Expiry.Year;
             }
-            catch (NullReferenceException)
+            catch (NullReferenceException null_ref)
             {
+                string message = "There was an error while getting the card.";
+                if (customer != null && creditCard != null)
+                {
+                    message += $" Card number: {creditCard.Number} for user: {customer.ContactName}";
+                }
+                _logger.LogWarning(null_ref, message);
             }
 
             _model.Cart = HttpContext.Session.Get<Cart>("Cart");
@@ -95,8 +104,14 @@ namespace WebGoatCore.Controllers
             {
                 creditCard.GetCardForUser();
             }
-            catch (NullReferenceException)
+            catch (NullReferenceException null_ref)
             {
+                string msg = "There was an error while getting the card.";
+                if (customer != null && creditCard != null)
+                {
+                    msg += $" Card number: {creditCard.Number} for user: {customer.ContactName}";
+                }
+                _logger.LogWarning(null_ref, msg);
             }
 
             //Get form of payment
@@ -162,6 +177,10 @@ namespace WebGoatCore.Controllers
             //Create the order itself.
             var orderId = _orderRepository.CreateOrder(order);
 
+            // Log the information for successfull order creation
+            string message = $"Order Creted with order ID: {orderId} for user: {customer.ContactName}";
+            _logger.LogInformation(message);
+
             //Create the payment record.
             _orderRepository.CreateOrderPayment(orderId, order.Total, creditCard.Number, creditCard.Expiry, approvalCode);
 
@@ -191,8 +210,9 @@ namespace WebGoatCore.Controllers
             {
                 order = _orderRepository.GetOrderById(orderId.Value);
             }
-            catch (InvalidOperationException)
+            catch (InvalidOperationException invalid_op)
             {
+                _logger.LogError(invalid_op, $"Order {orderId} was not found.");
                 ModelState.AddModelError(string.Empty, string.Format("Order {0} was not found.", orderId));
                 return View();
             }

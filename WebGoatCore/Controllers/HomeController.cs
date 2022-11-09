@@ -8,6 +8,8 @@ using Microsoft.AspNetCore.Http;
 using System.IO;
 using System.Threading.Tasks;
 using System;
+using Microsoft.AspNetCore.Hosting;
+using Microsoft.Extensions.Logging;
 
 namespace WebGoatCore.Controllers
 {
@@ -15,13 +17,16 @@ namespace WebGoatCore.Controllers
     public class HomeController : Controller
     {
         private readonly ProductRepository _productRepository;
+        private readonly IWebHostEnvironment _webHostEnvironment;
+        private readonly ILogger _logger;
 
-        public HomeController(ProductRepository productRepository)
+        public HomeController(IWebHostEnvironment webHostEnvironment, ProductRepository productRepository, ILogger<HomeController> logger)
         {
+            _webHostEnvironment = webHostEnvironment;
             _productRepository = productRepository;
+            _logger = logger;
         }
 
-        [HttpGet]
         public IActionResult Index()
         {
             return View(new HomeViewModel()
@@ -67,20 +72,53 @@ namespace WebGoatCore.Controllers
             ViewBag.Message = "";
             try
             {
-                var path = HttpContextServerVariableExtensions.GetServerVariable(this.HttpContext, "PATH_TRANSLATED");
-                path = path + "\\..\\wwwroot\\upload\\" + FormFile.FileName;
+                // Create a temporary filename with .txt extension
+                string newFilename = $"{Path.GetRandomFileName()}{Guid.NewGuid()}.txt"; ;
+                string tempFolderPath = GetTemporaryDirectory();
+
+                // Generate a path with the filename
+                string path = Path.Combine(tempFolderPath, newFilename);
+
+                // Copy the contents of the file to the new location
                 using (var fileStream = new FileStream(path, FileMode.Create))
                 {
                     await FormFile.CopyToAsync(fileStream);
                 }
-                ViewBag.Message = $"File {FormFile.FileName} Uploaded Successfully at /upload";
-                return View("About");
+
+                // Read the contents of the copied file
+                string? content;
+                using (StreamReader sr = new StreamReader(path))
+                {
+                    content = sr.ReadToEnd();
+                }
+
+                // Check whether the content value is present or not
+                if (content != null && content.Length > 0)
+                {
+                    // Verify whether the content has unicode characters or not
+                    bool hasUnicode = System.Text.Encoding.UTF8.GetByteCount(content) != content.Length;
+
+                    // Throw error if the contents of the file contains unicode characters.
+                    if (hasUnicode == true)
+                    {
+                        throw new InvalidDataException("The given brochure contains some invalid characters. Please remove them.");
+                    }
+
+                    // Clean up resources
+                    System.IO.File.Delete(path);
+                    Directory.Delete(tempFolderPath, true);
+
+                    ViewBag.Message = "Successfully uploaded your feedback! Thank you!";
+                }
             }
             catch (Exception ex)
             {
-                return View("Error", new ErrorViewModel()
-                { ExceptionInfo = (IExceptionHandlerPathFeature)ex });
+                // InvalidDataException is intended to be caught here
+                string message = $"Error occurred while reading the file. {ex.Message}";
+                _logger.LogError(ex, message);
+                ViewBag.Message = $"File processing failed: {ex.Message}";
             }
+            return View("About");
         }
 
         [Authorize(Roles = "Admin")]
@@ -94,6 +132,14 @@ namespace WebGoatCore.Controllers
                 RequestId = Activity.Current?.Id ?? HttpContext.TraceIdentifier,
                 ExceptionInfo = HttpContext.Features.Get<IExceptionHandlerPathFeature>(),
             });
+        }
+
+        // Utility method to generate a temporary directory
+        private string GetTemporaryDirectory()
+        {
+            string tempDirectory = Path.Combine(Path.GetTempPath(), Path.GetRandomFileName());
+            Directory.CreateDirectory(tempDirectory);
+            return tempDirectory;
         }
     }
 }

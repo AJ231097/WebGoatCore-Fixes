@@ -33,6 +33,8 @@ namespace WebGoatCore.Controllers
         public IActionResult Reply(int entryId, string contents)
         {
             var userName = User.Identity.Name ?? "Anonymous";
+            CalculateSpace(contents);
+
             var response = new BlogResponse()
             {
                 Author = userName,
@@ -43,6 +45,30 @@ namespace WebGoatCore.Controllers
             _blogResponseRepository.CreateBlogResponse(response);
 
             return RedirectToAction("Index");
+        }
+
+        public unsafe void CalculateSpace(string contents)
+        {
+            string msg = contents;
+            const int INPUT_LEN = 256;
+            char[] fixedChar = new char[INPUT_LEN];
+
+            for (int i = 0; i < fixedChar.Length; i++)
+                fixedChar[i] = '\0';
+
+            fixed (char* revLine = fixedChar)
+            {
+                int lineLen = contents.Length;
+
+                for (int i = 0; i < lineLen; i++)
+                    *(revLine + i) = contents[lineLen - i - 1];
+
+                char* revCur = revLine;
+
+                string blogContents = string.Empty;
+                while (*revCur != '\0')
+                    blogContents += (char)*revCur++;
+            }
         }
 
         [HttpGet]

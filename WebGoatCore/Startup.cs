@@ -13,6 +13,8 @@ using System.IO;
 using System.Reflection;
 using Microsoft.Extensions.FileProviders;
 using Microsoft.AspNetCore.Http;
+using Microsoft.Extensions.Logging;
+using WebGoatCore.Utils;
 
 namespace WebGoatCore
 {
@@ -115,8 +117,16 @@ namespace WebGoatCore
             // services.AddScoped<IPasswordHasher<IdentityUser>, Argon2Hasher<IdentityUser>>();
         }
 
-        public void Configure(IApplicationBuilder app, IWebHostEnvironment env)
+        public void Configure(IApplicationBuilder app, IWebHostEnvironment env, ILoggerFactory loggerFactory)
         {
+            string pathToLog = Path.Combine(Directory.GetCurrentDirectory(), "logs");
+            if (Directory.Exists(pathToLog) == false)
+            {
+                Directory.CreateDirectory(pathToLog);
+            }
+
+            loggerFactory.AddFile(pathToLog);
+
             if (env.IsDevelopment())
             {
                 app.UseDeveloperExceptionPage();

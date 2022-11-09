@@ -28,7 +28,7 @@
     <form enctype="multipart/form-data" method="post" asp-controller="Home" asp-action="UploadFile" runat="server">
         <dl>
             <dt>
-                <h2>Upload your brochure to provide us with the feedback</h2>
+                <h2>Upload your brochure (in text format) to provide us with the feedback. </h2>
             </dt>
             <dd>
                 <input type="file" name="FormFile" id="FormFile" runat="server">
@@ -39,4 +39,4 @@
     </form>
 </div>
 <br />
-<div>@ViewBag.Message</div>
+<div>@Html.Raw(ViewBag.Message)</div>
