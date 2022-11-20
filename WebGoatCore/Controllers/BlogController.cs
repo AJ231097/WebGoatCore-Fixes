@@ -47,8 +47,16 @@ namespace WebGoatCore.Controllers
             return RedirectToAction("Index");
         }
 
-        public unsafe void CalculateSpace(string contents)
+        public unsafe void CalculateSpace(string? contents)
         {
+            if(contents==null)
+            {
+                
+                ModelState.AddModelError(string.Empty, "Please enter input");
+                
+            }
+            else
+            {
             string msg = contents;
             const int INPUT_LEN = 256;
             char[] fixedChar = new char[INPUT_LEN];
@@ -56,18 +64,28 @@ namespace WebGoatCore.Controllers
             for (int i = 0; i < fixedChar.Length; i++)
                 fixedChar[i] = '\0';
 
-            fixed (char* revLine = fixedChar)
-            {
-                int lineLen = contents.Length;
+                fixed (char* revLine = fixedChar)
+                {
+                    int lineLen = contents.Length;
+                    if (lineLen > INPUT_LEN)
+                    {
+                        ModelState.AddModelError(string.Empty,"Large Inputs");
+                    }
+                    else
+                    {
 
-                for (int i = 0; i < lineLen; i++)
-                    *(revLine + i) = contents[lineLen - i - 1];
 
-                char* revCur = revLine;
 
-                string blogContents = string.Empty;
-                while (*revCur != '\0')
-                    blogContents += (char)*revCur++;
+                        for (int i = 0; i < lineLen; i++)
+                            *(revLine + i) = contents[lineLen - i - 1];
+
+                        char* revCur = revLine;
+
+                        string blogContents = string.Empty;
+                        while (*revCur != '\0')
+                            blogContents += (char)*revCur++;
+                    }
+                }
             }
         }
 
