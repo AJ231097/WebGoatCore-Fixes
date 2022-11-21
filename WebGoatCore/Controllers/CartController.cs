@@ -16,7 +16,7 @@ namespace WebGoatCore.Controllers
             _productRepository = productRepository;
         }
 
-        [HttpGet, HttpPost]
+        [HttpGet]
         public IActionResult Index()
         {
             if (!HttpContext.Session.TryGet<Cart>("Cart", out var cart))
@@ -27,7 +27,7 @@ namespace WebGoatCore.Controllers
             return View(cart);
         }
 
-        [HttpPost("{productId}"), HttpHead("{productId}")]
+        [HttpPost("{productId}")]
         public IActionResult AddOrder(int productId, short quantity)
         {
             if (!HttpContext.Session.TryGet<Cart>("Cart", out var cart))

@@ -65,7 +65,7 @@ namespace WebGoatCore.Controllers
             }
         }
 
-        [HttpGet("{productId}"), HttpPost("{productId}")]
+        [HttpGet("{productId}")]
         public IActionResult Details(int productId, [FromQuery(Name = "productName")] string productName = "")
         {
             var model = new ProductDetailsViewModel();
