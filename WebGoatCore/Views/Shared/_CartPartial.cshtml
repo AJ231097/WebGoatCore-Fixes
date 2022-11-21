@@ -34,13 +34,13 @@
         <td></td>
         <td></td>
         @{
-            short total = 0;
+            double total = 0;
 
             foreach (var order in Model.OrderDetails)
             {
                 checked
                 {
-                    short price = Convert.ToInt16(order.ExtendedPrice);
+                    double price = Convert.ToInt64(order.ExtendedPrice);
                     total += price;
                 }
             }
