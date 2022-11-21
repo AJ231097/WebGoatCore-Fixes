@@ -44,7 +44,7 @@ namespace WebGoatCore.Controllers
                 return View(model);
             }
 
-            string message = $"Sign in attempt by user {model.Username} with password {model.Password}";
+            string message = $"Sign in attempt by user {model.Username}";
             _logger.LogInformation(message);
 
             var result = await _signInManager.PasswordSignInAsync(model.Username, model.Password, model.RememberMe, lockoutOnFailure: true);
@@ -111,7 +111,7 @@ namespace WebGoatCore.Controllers
                     _customerRepository.CreateCustomer(model.CompanyName, model.Username, model.Address, model.City, model.Region, model.PostalCode, model.Country);
 
                     await _signInManager.SignInAsync(user, isPersistent: false);
-                    message = $"Successfully registered user {model.Username} with Address: {model.Address}, City: {model.City}, Region: {model.Region}, Postal Code: {model.PostalCode}, Country: {model.Country}";
+                    message = $"Successfully registered user {model.Username}";
                     _logger.LogInformation(message);
 
                     return RedirectToAction("Index", "Home");
