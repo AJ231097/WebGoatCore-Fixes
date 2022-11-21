@@ -51,8 +51,9 @@ namespace WebGoatCore.Controllers
         {
             if(contents==null)
             {
-                
+
                 ModelState.AddModelError(string.Empty, "Please enter input");
+                
                 
             }
             else
