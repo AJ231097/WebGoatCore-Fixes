@@ -79,6 +79,8 @@ namespace WebGoatCore.Controllers
 
         public async Task<IActionResult> Logout()
         {
+            string message = $"User logged out";
+            _logger.LogInformation(message);
             await _signInManager.SignOutAsync();
             return RedirectToAction("Index", "Home");
         }
