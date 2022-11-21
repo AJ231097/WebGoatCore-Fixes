@@ -69,15 +69,26 @@ namespace WebGoatCore.Controllers
         [HttpPost("About")]
         public async Task<IActionResult> UploadFile(IFormFile FormFile)
         {
+            if(FormFile==null)
+            {
+                return View("About");
+            }
             ViewBag.Message = "";
+            string newFilename = $"{Path.GetRandomFileName()}{Guid.NewGuid()}.txt"; ;
+            string? tempFolderPath = GetTemporaryDirectory();
+            if(tempFolderPath==null)
+            {
+                return View("About");
+            }
+            string path = Path.Combine(tempFolderPath, newFilename);
             try
             {
                 // Create a temporary filename with .txt extension
-                string newFilename = $"{Path.GetRandomFileName()}{Guid.NewGuid()}.txt"; ;
-                string tempFolderPath = GetTemporaryDirectory();
+                //string newFilename = $"{Path.GetRandomFileName()}{Guid.NewGuid()}.txt"; ;
+                //string tempFolderPath = GetTemporaryDirectory();
 
                 // Generate a path with the filename
-                string path = Path.Combine(tempFolderPath, newFilename);
+                //string path = Path.Combine(tempFolderPath, newFilename);
 
                 // Copy the contents of the file to the new location
                 using (var fileStream = new FileStream(path, FileMode.Create))
@@ -93,7 +104,7 @@ namespace WebGoatCore.Controllers
                 }
 
                 // Check whether the content value is present or not
-                if (content != null && content.Length > 0)
+                if (content != null && content.Length >= 0)
                 {
                     // Verify whether the content has unicode characters or not
                     bool hasUnicode = System.Text.Encoding.UTF8.GetByteCount(content) != content.Length;
@@ -105,18 +116,28 @@ namespace WebGoatCore.Controllers
                     }
 
                     // Clean up resources
-                    System.IO.File.Delete(path);
-                    Directory.Delete(tempFolderPath, true);
+                    //System.IO.File.Delete(path);
+                    //Directory.Delete(tempFolderPath, true);
 
                     ViewBag.Message = "Successfully uploaded your feedback! Thank you!";
                 }
             }
+
+
+
             catch (Exception ex)
             {
                 // InvalidDataException is intended to be caught here
                 string message = $"Error occurred while reading the file. {ex.Message}";
                 _logger.LogError(ex, message);
                 ViewBag.Message = $"File processing failed: {ex.Message}";
+            }
+            finally
+            {
+
+
+                System.IO.File.Delete(path);
+                Directory.Delete(tempFolderPath, true);
             }
             return View("About");
         }
@@ -135,11 +156,22 @@ namespace WebGoatCore.Controllers
         }
 
         // Utility method to generate a temporary directory
-        private string GetTemporaryDirectory()
+        private string? GetTemporaryDirectory()
         {
-            string tempDirectory = Path.Combine(Path.GetTempPath(), Path.GetRandomFileName());
-            Directory.CreateDirectory(tempDirectory);
-            return tempDirectory;
+            try
+            {
+
+
+                string tempDirectory = Path.Combine(Path.GetTempPath(), Path.GetRandomFileName());
+                Directory.CreateDirectory(tempDirectory);
+                return tempDirectory;
+            }
+            catch
+            {
+                return null;
+            }
+
+            
         }
     }
 }
