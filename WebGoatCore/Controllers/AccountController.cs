@@ -175,6 +175,8 @@ namespace WebGoatCore.Controllers
 
             if (ModelState.IsValid)
             {
+                string message = $"Edit account details attempted by {_userManager.GetUserName(User)}";
+                _logger.LogInformation(message);
                 customer.CompanyName = model.CompanyName ?? customer.CompanyName;
                 customer.ContactTitle = model.ContactTitle ?? customer.ContactTitle;
                 customer.Address = model.Address ?? customer.Address;
@@ -198,6 +200,8 @@ namespace WebGoatCore.Controllers
         {
             if (ModelState.IsValid)
             {
+                string message = $"Password change attempted by {_userManager.GetUserName(User)}";
+                _logger.LogInformation(message);
                 var result = await _userManager.ChangePasswordAsync(await _userManager.GetUserAsync(User), model.OldPassword, model.NewPassword);
                 if (result.Succeeded)
                 {
@@ -310,6 +314,8 @@ namespace WebGoatCore.Controllers
                 ModelState.AddModelError(string.Empty, "We don't recognize your username. Please try again.");
                 return View(resetPasswordModel);
             }
+            string message = $"Password reset attempt by {resetPasswordModel.Username}";
+            _logger.LogInformation(message);
             var resetPassResult = await _userManager.ResetPasswordAsync(user, resetPasswordModel.Token, resetPasswordModel.Password);
             if (!resetPassResult.Succeeded)
             {
