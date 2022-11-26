@@ -39,7 +39,12 @@ namespace WebGoatCore.Utils
                         exc = $"{n}{exception.GetType()}: {exception.Message}{n}{exception.StackTrace}{n}";
                     }
                     string message = $"{DateTime.UtcNow.ToString("yyyy-MM-ddTHH:mm:ssZ", CultureInfo.InvariantCulture)} [{logLevel}]: ";
-                    message += $"{formatter(state, exception)}{n}{exc}";
+                    message += $"{formatter(state, exception)}";
+                    if (logLevel == LogLevel.Debug)
+                    {
+                        message += $"{n}EventId: {eventId.Id}, Event Name: {eventId.Name}, Path: {filePath}";
+                    }
+                    message += $"{n}{exc}";
                     File.AppendAllText(fullFilePath, message);
                 }
             }

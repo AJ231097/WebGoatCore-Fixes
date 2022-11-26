@@ -26,6 +26,10 @@ namespace WebGoatCore.ViewModels
         [Display(Name = "Country")]
         public string? Country { get; set; }
 
+    #if DEBUG
+        [Display(Name = "Information")]
+        public string? Information { get; set; }
+    #endif
 
         public bool UpdatedSucessfully { get; set; }
     }
