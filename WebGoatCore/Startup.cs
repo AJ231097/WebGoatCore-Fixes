@@ -15,6 +15,8 @@ using Microsoft.Extensions.FileProviders;
 using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Logging;
 using WebGoatCore.Utils;
+using Microsoft.AspNetCore.ResponseCompression;
+using System.Linq;
 
 namespace WebGoatCore
 {
@@ -52,6 +54,16 @@ namespace WebGoatCore
                 options.UseSqlite(NorthwindContext.ConnString)
                     .UseLazyLoadingProxies(),
                 ServiceLifetime.Scoped);
+            services.AddWebOptimizer(pipeline =>
+            {
+                pipeline.AddCssBundle("/css/bundle.css", "css/**/*.css");
+            });
+            services.AddResponseCompression(options => {
+                options.MimeTypes = ResponseCompressionDefaults.MimeTypes.Concat(
+                    new[] { "text/javascript" }
+                );
+            });
+
 
             services.AddDefaultIdentity<IdentityUser>()
                 .AddRoles<IdentityRole>()
@@ -130,12 +142,14 @@ namespace WebGoatCore
             if (env.IsDevelopment())
             {
                 app.UseDeveloperExceptionPage();
+                
             }
             else
             {
                 app.UseExceptionHandler("/Home/Error");
             }
-
+            app.UseResponseCompression();
+            app.UseWebOptimizer();
             app.UseStaticFiles(new StaticFileOptions
             {
                 ServeUnknownFileTypes = true

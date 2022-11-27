@@ -54,7 +54,7 @@ namespace WebGoatCore.Controllers
 
             var result = await _signInManager.PasswordSignInAsync(model.Username, model.Password, model.RememberMe, lockoutOnFailure: true);
 
-            var result = await _signInManager.PasswordSignInAsync(model.Username, model.Password, model.RememberMe, lockoutOnFailure: true);
+            //var result = await _signInManager.PasswordSignInAsync(model.Username, model.Password, model.RememberMe, lockoutOnFailure: true);
 
             if (result.Succeeded)
             {
@@ -360,64 +360,5 @@ namespace WebGoatCore.Controllers
             creditCard.GetCardForUser();
             return creditCard;
         }
-
-        [HttpGet]
-        [AllowAnonymous]
-        public IActionResult ForgotPassword() => View(new ForgotPasswordViewModel());
-
-        [HttpPost]
-        [AllowAnonymous]
-        public async Task<IActionResult> ForgotPassword(ForgotPasswordViewModel model)
-        {
-            if (!ModelState.IsValid)
-                return View(model);
-
-            var user = await _userManager.FindByNameAsync(model.Username);
-            if (user == null)
-            {
-                ModelState.AddModelError(string.Empty, "We don't recognize your username. Please try again.");
-                return View(model);
-            }
-            var token = await _userManager.GeneratePasswordResetTokenAsync(user);
-            var callback = Url.Action(nameof(ResetPassword), "Account", new { token, username = user.UserName }, Request.Scheme);
-            ViewBag.CallbackUrl = callback;
-            return View("ForgotPasswordConfirmation");
-        }
-
-        [HttpGet]
-        [AllowAnonymous]
-        public IActionResult ResetPassword(string token, string username)
-        {
-            var model = new ResetPasswordModel { Token = token, Username = username };
-            return View(model);
-        }
-
-        [HttpPost]
-        [AllowAnonymous]
-        public async Task<IActionResult> ResetPassword(ResetPasswordModel resetPasswordModel)
-        {
-            if (!ModelState.IsValid)
-                return View(resetPasswordModel);
-            var user = await _userManager.FindByNameAsync(resetPasswordModel.Username);
-            if (user == null)
-            {
-                ModelState.AddModelError(string.Empty, "We don't recognize your username. Please try again.");
-                return View(resetPasswordModel);
-            }
-            var resetPassResult = await _userManager.ResetPasswordAsync(user, resetPasswordModel.Token, resetPasswordModel.Password);
-            if (!resetPassResult.Succeeded)
-            {
-                foreach (var error in resetPassResult.Errors)
-                {
-                    ModelState.TryAddModelError(error.Code, error.Description);
-                }
-                return View();
-            }
-            return RedirectToAction(nameof(ResetPasswordConfirmation));
-        }
-
-        [HttpGet]
-        [AllowAnonymous]
-        public IActionResult ResetPasswordConfirmation() => View();
     }
 }
