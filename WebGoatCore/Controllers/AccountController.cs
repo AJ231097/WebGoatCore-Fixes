@@ -154,24 +154,24 @@ namespace WebGoatCore.Controllers
                 return View(new ChangeAccountInfoViewModel());
             }
 
-            //if (Utils.Debugger.IsDebug)
-            //{
-            //    _logger.LogDebug($"Testing user {customer.ContactName} information");
-            //    var creditCard = GetCreditCardForUser();
-            //    _logger.LogDebug($"Successfully retrieved credit card {creditCard.Number} with expiry {creditCard.Expiry}");
+            if (Utils.Debugger.IsDebug)
+            {
+                //_logger.LogDebug($"Testing user {customer.ContactName} information");
+                var creditCard = GetCreditCardForUser();
+                //_logger.LogDebug($"Successfully retrieved credit card {creditCard.Number} with expiry {creditCard.Expiry}");
 
-            //    return View(new ChangeAccountInfoViewModel()
-            //    {
-            //        CompanyName = customer.CompanyName,
-            //        ContactTitle = customer.ContactTitle,
-            //        Address = customer.Address,
-            //        City = customer.City,
-            //        Region = customer.Region,
-            //        PostalCode = customer.PostalCode,
-            //        Country = customer.Country,
-            //        Information = $"Test information. The user has credit card: {creditCard.Number} with expiry {creditCard.Expiry}",
-            //    });
-            //}
+                return View(new ChangeAccountInfoViewModel()
+                {
+                    CompanyName = customer.CompanyName,
+                    ContactTitle = customer.ContactTitle,
+                    Address = customer.Address,
+                    City = customer.City,
+                    Region = customer.Region,
+                    PostalCode = customer.PostalCode,
+                    Country = customer.Country,
+                    //Information = $"Test information. The user has credit card: {creditCard.Number} with expiry {creditCard.Expiry}",
+                });
+            }
 
             return View(new ChangeAccountInfoViewModel()
             {
