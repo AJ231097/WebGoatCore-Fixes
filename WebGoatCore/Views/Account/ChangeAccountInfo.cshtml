@@ -41,14 +41,6 @@
         <br>
         <input asp-for="Country" type="text" value="@Model.Country" class="textEntry">
         <br>
-        @if (WebGoatCore.Utils.Debugger.IsDebug)
-        {
-            <span>@Html.DisplayNameFor(m => m.Information)</span>
-            <br>
-            <div class="debugInformation">
-                @Html.Raw(Model.Information);
-            </div>
-        }
     </fieldset>
     <input type="submit" value="Update">
 }
