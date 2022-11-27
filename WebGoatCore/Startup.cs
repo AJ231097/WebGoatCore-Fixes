@@ -127,14 +127,8 @@ namespace WebGoatCore
 
             loggerFactory.AddFile(pathToLog);
 
-            if (env.IsDevelopment())
-            {
-                app.UseDeveloperExceptionPage();
-            }
-            else
-            {
                 app.UseExceptionHandler("/Home/Error");
-            }
+
 
             app.UseStaticFiles(new StaticFileOptions
             {
